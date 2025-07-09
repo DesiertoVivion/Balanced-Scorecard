@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Produce S.A. - Balanced Scorecard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2em;
+        }
+
+        .controls {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .dashboard {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .perspective {
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .perspective:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .perspective-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .perspective-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .financiera .perspective-icon {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .cliente .perspective-icon {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .procesos .perspective-icon {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+
+        .aprendizaje .perspective-icon {
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+        }
+
+        .perspective-title {
+            color: white;
+            font-size: 1.8em;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        .collapse-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-btn.collapsed {
+            transform: rotate(180deg);
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .indicator-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .indicator-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .financiera .indicator-card {
+            border-left-color: #4CAF50;
+        }
+
+        .cliente .indicator-card {
+            border-left-color: #2196F3;
+        }
+
+        .procesos .indicator-card {
+            border-left-color: #FF9800;
+        }
+
+        .aprendizaje .indicator-card {
+            border-left-color: #9C27B0;
+        }
+
+        .indicator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .indicator-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .indicator-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .positive {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .negative {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .neutral {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+
+        .indicator-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            transition: width 0.8s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .indicators-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🥑 Mission Produce S.A.</h1>
+        <p>Balanced Scorecard Dashboard - Gestión Integral de Paltas</p>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <button class="btn btn-primary active" onclick="setPeriod('actual')">Período Actual</button>
+            <button class="btn btn-secondary" onclick="setPeriod('forecast')">Pronóstico</button>
+            <button class="btn btn-warning" onclick="setPeriod('historical')">Histórico</button>
+        </div>
+        <div class="control-group">
+            <input type="text" class="search-box" placeholder="Buscar indicadores..." onkeyup="searchIndicators(this.value)">
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Indicadores Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">18</div>
+                <div class="stat-label">En Meta</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">En Seguimiento</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Críticos</div>
+            </div>
+        </div>
+
+        <!-- Perspectiva Financiera -->
+        <div class="perspective financiera">
+            <div class="perspective-header" onclick="togglePerspective('financiera')">
+                <div class="perspective-icon">💰</div>
+                <div class="perspective-title">Perspectiva Financiera</div>
+                <button class="collapse-btn">▼</button>
+            </div>
+            <div class="indicators-grid" id="financiera-indicators">
+                <div class="indicator-card" data-keywords="ingresos ventas mensual">
+                    <div class="indicator-header">
+                        <div class="indicator-title">Ingresos Mensuales</div>
+                        <div class="indicator-value positive">+15%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: +15% anual</span>
+                        <span>Iniciativa: Campaña comercial y fidelización</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="ingresos-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="mermas costos perdidas">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Mermas</div>
+                        <div class="indicator-value positive">-8%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: -10% en 6 meses</span>
+                        <span>Iniciativa: Mejora de procesos y control de calidad</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mermas-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="margen operativo rentabilidad">
+                    <div class="indicator-header">
+                        <div class="indicator-title">Margen Operativo (%)</div>
+                        <div class="indicator-value positive">+7 pts</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: +5 puntos</span>
+                        <span>Iniciativa: Optimización operativa general</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="margen-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="rendimiento cosecha palta">
+                    <div class="indicator-header">
+                        <div class="indicator-title">Kg/ha de Palta</div>
+                        <div class="indicator-value positive">25%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: mayor al 20%</span>
+                        <span>Iniciativa: Gestión eficiente del campo</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="rendimiento-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perspectiva Cliente -->
+        <div class="perspective cliente">
+            <div class="perspective-header" onclick="togglePerspective('cliente')">
+                <div class="perspective-icon">👥</div>
+                <div class="perspective-title">Perspectiva Cliente</div>
+                <button class="collapse-btn">▼</button>
+            </div>
+            <div class="indicators-grid" id="cliente-indicators">
+                <div class="indicator-card" data-keywords="satisfaccion cliente nivel">
+                    <div class="indicator-header">
+                        <div class="indicator-title">Nivel de Satisfacción (%)</div>
+                        <div class="indicator-value positive">92%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: ≥90%</span>
+                        <span>Iniciativa: Encuestas, seguimiento y postventa</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="satisfaccion-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="paltas conforme lote">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Paltas Conforme por Lote</div>
+                        <div class="indicator-value positive">96%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 95%</span>
+                        <span>Iniciativa: Control de calidad y empaque</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="conforme-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 96%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="lotes incompletos">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Lotes Incompletos</div>
+                        <div class="indicator-value positive">88%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 90%</span>
+                        <span>Iniciativa: Estandarización del proceso de cosecha</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="incompletos-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 88%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="reclamos defecto">
+                    <div class="indicator-header">
+                        <div class="indicator-title">N° de Reclamos al Defecto</div>
+                        <div class="indicator-value positive">2</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: <3</span>
+                        <span>Iniciativa: Monitoreo, trazabilidad y respuesta rápida</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="reclamos-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="conformidad postcosecha">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Conformidad Postcosecha</div>
+                        <div class="indicator-value positive">97%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 95%</span>
+                        <span>Iniciativa: Buenas prácticas agrícolas</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="postcosecha-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 97%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perspectiva Procesos Internos -->
+        <div class="perspective procesos">
+            <div class="perspective-header" onclick="togglePerspective('procesos')">
+                <div class="perspective-icon">⚙️</div>
+                <div class="perspective-title">Perspectiva Procesos Internos</div>
+                <button class="collapse-btn">▼</button>
+            </div>
+            <div class="indicators-grid" id="procesos-indicators">
+                <div class="indicator-card" data-keywords="riego precio fertilizacion">
+                    <div class="indicator-header">
+                        <div class="indicator-title">Disponibilidad y Eficiencia Operativa</div>
+                        <div class="indicator-value positive">92%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: ≥90%</span>
+                        <span>Iniciativa: Mantenimiento preventivo y sistemas automáticos</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="eficiencia-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="cumplimiento monitoreo">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Cumplimiento de Monitoreo</div>
+                        <div class="indicator-value positive">100%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 100%</span>
+                        <span>Iniciativa: Sistema de monitoreo y digitalización</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="cumplimiento-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="tiempo activo maquinaria">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Tiempo Activo</div>
+                        <div class="indicator-value positive">96%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: ≥95%</span>
+                        <span>Iniciativa: Mantenimiento preventivo</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tiempo-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 96%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="alertas clima plagas">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Alertas Atendidas</div>
+                        <div class="indicator-value positive">100%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 100%</span>
+                        <span>Iniciativa: Monitoreo digital y fitosanitario</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="alertas-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perspectiva Aprendizaje y Crecimiento -->
+        <div class="perspective aprendizaje">
+            <div class="perspective-header" onclick="togglePerspective('aprendizaje')">
+                <div class="perspective-icon">📚</div>
+                <div class="perspective-title">Perspectiva Aprendizaje y Crecimiento</div>
+                <button class="collapse-btn">▼</button>
+            </div>
+            <div class="indicators-grid" id="aprendizaje-indicators">
+                <div class="indicator-card" data-keywords="personal capacitado agricultura">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% Personal Capacitado</div>
+                        <div class="indicator-value positive">100%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 100%</span>
+                        <span>Iniciativa: Programa de formación continua</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="capacitado-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="certificados vigentes">
+                    <div class="indicator-header">
+                        <div class="indicator-title">N° de Certificados Vigentes</div>
+                        <div class="indicator-value positive">4</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 3</span>
+                        <span>Iniciativa: Certificaciones como GlobalGAP, SENASA, etc.</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="certificados-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="indicator-card" data-keywords="lotes trazables digitalizacion">
+                    <div class="indicator-header">
+                        <div class="indicator-title">% de Lotes Trazables</div>
+                        <div class="indicator-value positive">100%</div>
+                    </div>
+                    <div class="indicator-meta">
+                        <span>Meta: 100%</span>
+                        <span>Iniciativa: Adopción de software y sensores</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trazables-chart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPeriod = 'actual';
+        
+        // Datos simulados para diferentes períodos
+        const dataByPeriod = {
+            actual: {
+                ingresos: [850, 920, 1050, 1200, 1150, 1380],
+                mermas: [12, 10, 8, 6, 7, 5],
+                margen: [18, 20, 22, 25, 24, 27],
+                rendimiento: [15000, 16500, 18000, 19500, 20800, 22500],
+                satisfaccion: [88, 89, 90, 91, 92, 92],
+                conforme: [92, 94, 95, 96, 96, 96],
+                incompletos: [85, 86, 87, 88, 88, 88],
+                reclamos: [5, 4, 3, 2, 2, 2],
+                postcosecha: [93, 94, 95, 96, 97, 97]
+            },
+            forecast: {
+                ingresos: [1380, 1450, 1520, 1600, 1680, 1750],
+                mermas: [5, 4, 3, 2, 2, 1],
+                margen: [27, 28, 29, 30, 31, 32],
+                rendimiento: [22500, 23500, 24500, 25500, 26500, 27500],
+                satisfaccion: [92, 93, 94, 95, 95, 96],
+                conforme: [96, 97, 97, 98, 98, 98],
+                incompletos: [88, 89, 90, 91, 92, 93],
+                reclamos: [2, 1, 1, 0, 0, 0],
+                postcosecha: [97, 97, 98, 98, 99, 99]
+            },
+            historical: {
+                ingresos: [600, 650, 700, 750, 800, 850],
+                mermas: [20, 18, 16, 14, 12, 10],
+                margen: [12, 14, 15, 16, 17, 18],
+                rendimiento: [10000, 11000, 12000, 13500, 14500, 15000],
+                satisfaccion: [82, 84, 85, 86, 87, 88],
+                conforme: [85, 87, 89, 90, 91, 92],
+                incompletos: [78, 80, 82, 83, 84, 85],
+                reclamos: [8, 7, 6, 5, 5, 5],
+                postcosecha: [88, 89, 90, 91, 92, 93]
+            }
+        };
+
+        // Función para cambiar período
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateAllCharts();
+        }
+
+        // Función para buscar indicadores
+        function searchIndicators(query) {
+            const cards = document.querySelectorAll('.indicator-card');
+            cards.forEach(card => {
+                const keywords = card.getAttribute('data-keywords') || '';
+                const title = card.querySelector('.indicator-title').textContent;
+                const searchText = (title + ' ' + keywords).toLowerCase();
+                
+                if (searchText.includes(query.toLowerCase()) || query === '') {
+                    card.style.display = 'block';
+                    card.classList.add('fade-in');
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Función para colapsar/expandir perspectivas
+        function togglePerspective(perspectiveId) {
+            const indicators = document.getElementById(perspectiveId + '-indicators');
+            const button = event.currentTarget.querySelector('.collapse-btn');
+            
+            if (indicators.style.display === 'none') {
+                indicators.style.display = 'grid';
+                button.classList.remove('collapsed');
+                button.textContent = '▼';
+            } else {
+                indicators.style.display = 'none';
+                button.classList.add('collapsed');
+                button.textContent = '▲';
+            }
+        }
+
+        // Función para crear gráficos
+        function createChart(canvasId, data, label, color) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: color,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e0e0e0'
+                            },
+                            ticks: {
+                                color: '#666'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e0e0e0'
+                            },
+                            ticks: {
+                                color: '#666'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Función para actualizar todos los gráficos
+        function updateAllCharts() {
+            const data = dataByPeriod[currentPeriod];
+            
+            // Limpiar gráficos existentes
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.destroy();
+            });
+            
+            // Crear nuevos gráficos con datos actualizados
+            setTimeout(() => {
+                createChart('ingresos-chart', data.ingresos, 'Ingresos (miles USD)', '#4CAF50');
+                createChart('mermas-chart', data.mermas, 'Mermas (%)', '#f44336');
+                createChart('margen-chart', data.margen, 'Margen (%)', '#2196F3');
+                createChart('rendimiento-chart', data.rendimiento, 'Kg/ha', '#FF9800');
+                createChart('satisfaccion-chart', data.satisfaccion, 'Satisfacción (%)', '#9C27B0');
+                createChart('conforme-chart', data.conforme, 'Conformidad (%)', '#4CAF50');
+                createChart('incompletos-chart', data.incompletos, 'Completos (%)', '#2196F3');
+                createChart('reclamos-chart', data.reclamos, 'Reclamos', '#f44336');
+                createChart('postcosecha-chart', data.postcosecha, 'Postcosecha (%)', '#FF9800');
+                
+                // Gráficos adicionales para procesos internos
+                createChart('eficiencia-chart', [88, 89, 90, 91, 92, 92], 'Eficiencia (%)', '#FF9800');
+                createChart('cumplimiento-chart', [95, 97, 98, 99, 100, 100], 'Cumplimiento (%)', '#4CAF50');
+                createChart('tiempo-chart', [92, 93, 94, 95, 96, 96], 'Tiempo Activo (%)', '#2196F3');
+                createChart('alertas-chart', [85, 90, 95, 98, 100, 100], 'Alertas (%)', '#9C27B0');
+                
+                // Gráficos para aprendizaje y crecimiento
+                createChart('capacitado-chart', [80, 85, 90, 95, 98, 100], 'Personal (%)', '#4CAF50');
+                createChart('certificados-chart', [2, 2, 3, 3, 4, 4], 'Certificados', '#2196F3');
+                createChart('trazables-chart', [70, 80, 85, 90, 95, 100], 'Trazabilidad (%)', '#FF9800');
+            }, 100);
+        }
+
+        // Función para animar elementos al cargar
+        function animateOnScroll() {
+            const cards = document.querySelectorAll('.indicator-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // Función para actualizar estadísticas en tiempo real
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach((stat, index) => {
+                const values = [24, 18, 4, 2];
+                const currentValue = parseInt(stat.textContent);
+                const targetValue = values[index];
+                
+                if (currentValue !== targetValue) {
+                    animateNumber(stat, currentValue, targetValue, 1000);
+                }
+            });
+        }
+
+        // Función para animar números
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+            const update = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (end - start) * progress);
+                
+                element.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            };
+            
+            requestAnimationFrame(update);
+        }
+
+        // Función para efectos de hover en las tarjetas
+        function addHoverEffects() {
+            const cards = document.querySelectorAll('.indicator-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Función para modo oscuro/claro
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
+
+        // Función para exportar datos
+        function exportData() {
+            const data = {
+                period: currentPeriod,
+                timestamp: new Date().toISOString(),
+                indicators: dataByPeriod[currentPeriod]
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mission_produce_bsc_${currentPeriod}_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Función para notificaciones
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(45deg, #4CAF50, #45a049)';
+            } else if (type === 'warning') {
+                notification.style.background = 'linear-gradient(45deg, #FF9800, #F57C00)';
+            } else if (type === 'error') {
+                notification.style.background = 'linear-gradient(45deg, #f44336, #d32f2f)';
+            } else {
+                notification.style.background = 'linear-gradient(45deg, #2196F3, #1976D2)';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAllCharts();
+            animateOnScroll();
+            addHoverEffects();
+            
+            // Mostrar notificación de bienvenida
+            setTimeout(() => {
+                showNotification('Dashboard cargado exitosamente', 'success');
+            }, 1000);
+            
+            // Actualizar estadísticas cada 5 segundos
+            setInterval(updateStats, 5000);
+        });
+
+        // Efectos de partículas en el fondo
+        function createParticles() {
+            const particlesContainer = document.createElement('div');
+            particlesContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    animation: float ${Math.random() * 10 + 5}s linear infinite;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                `;
+                particlesContainer.appendChild(particle);
+            }
+            
+            document.body.appendChild(particlesContainer);
+        }
+
+        // Agregar keyframes para las partículas
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-20px) rotate(180deg); }
+                100% { transform: translateY(0px) rotate(360deg); }
+            }
+            
+            .dark-theme {
+                filter: invert(1) hue-rotate(180deg);
+            }
+            
+            .notification {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Crear partículas de fondo
+        createParticles();
+    </script>
+</body>
+</html>
